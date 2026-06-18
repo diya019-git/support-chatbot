@@ -496,32 +496,34 @@ def register_routes(app, limiter):
         _cache_set("analytics:dashboard", result, ttl_seconds=30)
         return jsonify(result)
 
-@app.get("/api/admin/seed")
-def seed_database():
-    """One-time seed endpoint — delete this after seeding!"""
-    import os
-    secret = request.args.get("secret")
-    if secret != os.environ.get("SEED_SECRET", "seed-me-now"):
-        return jsonify({"error": "forbidden"}), 403
+    # ------------------------------------------------------------------
+    # One-time seed endpoint (delete after seeding in production!)
+    # ------------------------------------------------------------------
 
-    from seed_data import FAQS, ADMIN_USERS
-    from models import Admin, FAQ
+    @app.get("/api/admin/seed")
+    def seed_database():
+        import os
+        secret = request.args.get("secret")
+        if secret != os.environ.get("SEED_SECRET", "seed-me-now"):
+            return jsonify({"error": "forbidden"}), 403
 
-    added = {"users": 0, "faqs": 0}
-    for user in ADMIN_USERS:
-        if not Admin.query.filter_by(username=user["username"]).first():
-            admin = Admin(username=user["username"], role=user["role"])
-            admin.set_password(user["password"])
-            db.session.add(admin)
-            added["users"] += 1
+        from seed_data import FAQS, ADMIN_USERS
 
-    if FAQ.query.count() == 0:
-        for faq in FAQS:
-            db.session.add(FAQ(**faq))
-            added["faqs"] += 1
+        added = {"users": 0, "faqs": 0}
+        for user in ADMIN_USERS:
+            if not Admin.query.filter_by(username=user["username"]).first():
+                admin = Admin(username=user["username"], role=user["role"])
+                admin.set_password(user["password"])
+                db.session.add(admin)
+                added["users"] += 1
 
-    db.session.commit()
-    return jsonify({"status": "seeded", "added": added})
+        if FAQ.query.count() == 0:
+            for faq in FAQS:
+                db.session.add(FAQ(**faq))
+                added["faqs"] += 1
+
+        db.session.commit()
+        return jsonify({"status": "seeded", "added": added})
 
 app = create_app()
 
