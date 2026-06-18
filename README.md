@@ -44,9 +44,9 @@ SupportPilot automates repetitive customer support queries using NLP, freeing hu
 
 | Service | URL |
 |---------|-----|
-| Customer Chat | _Add your Vercel URL here_ |
-| Admin Dashboard | _Add your Vercel URL_ `/admin` |
-| Backend API | _Add your Render URL here_ |
+| Customer Chat | https://support-chatbot-ivory.vercel.app |
+| Admin Dashboard | https://support-chatbot-ivory.vercel.app/admin |
+| Backend API | https://support-chatbot-q2v6.onrender.com/api |
 
 **Demo credentials:**
 
